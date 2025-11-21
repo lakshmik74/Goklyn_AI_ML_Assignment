@@ -1,0 +1,6 @@
+Failed login from 192.168.1.12
+Failed login from 192.168.1.12
+Successful login from 192.168.1.24
+Suspicious connection from 45.77.23.19
+Malware detected on host SERVER-3
+Failed login from 45.77.23.19
