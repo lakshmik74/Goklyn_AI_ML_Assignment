@@ -22,14 +22,13 @@ Goklyn_Assignment/
 │   └── Task1_Detailed_Report.pdf
 │
 ├── Task-2/
-│   ├── siem_agent.py
+│   ├── app.py
 │   ├── playbooks.yml
 │   ├── sample_logs.txt
-│   └── Task2_Agent_Report.pdf
+│   └── requirements.txt
 │
 ├── Task-3/
-│   ├── Task3_Proposal.pdf
-│   └── Task3_Proposal_Enhanced.pdf
+│   └── Task3_Proposal.pdf
 │
 └── requirements.txt
 ```
@@ -62,8 +61,8 @@ python Task-1/ml_pipeline.py
 - Detects intent from security logs
 - Maps detected intent → SOC playbook actions
 - YAML-based playbooks for modular automation
-- Easy for evaluators to run and test
-- Simulates L1/L2 SOC analyst responses
+- Sample logs included for evaluator testing
+- Clean interactive UI using Streamlit
 
 ### ▶️ Run Task 2
 ```bash
