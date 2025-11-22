@@ -1,148 +1,76 @@
 import streamlit as st
 import yaml
-<<<<<<< HEAD
-import joblib
+import re
+import os
 
-# Load playbooks
-with open("playbooks.yml", "r") as f:
-    playbooks = yaml.safe_load(f)
+STREAMLIT_PATH = os.path.dirname(__file__)
+PLAYBOOK_PATH = os.path.join(STREAMLIT_PATH, "playbooks.yml")
 
-# Load classifier & vectorizer
-clf = joblib.load("intent_classifier.joblib")
-vectorizer = joblib.load("intent_vectorizer.joblib")
+# ------------------------- Load Playbooks -------------------------
+def load_playbooks():
+    try:
+        with open(PLAYBOOK_PATH, "r") as f:
+            return yaml.safe_load(f)
+    except Exception as e:
+        st.error(f"Failed to load playbooks.yml: {e}")
+        return {}
 
-st.title("🛡️ Offline SIEM AI Agent")
-st.write("Provide a log line and the AI agent will detect the intent and map it to the correct SOC playbook.")
+# ------------------------- Intent Detection -------------------------
+def detect_intent(log):
+    log_lower = log.lower()
 
-log_input = st.text_area("Enter Security Log Message:")
+    patterns = {
+        "failed login": r"failed login|authentication failed|invalid password",
+        "brute force": r"multiple failed|too many attempts|bruteforce",
+        "malware detected": r"malware|virus|trojan|worm detected",
+        "sql injection": r"sql injection|select .* from|drop table",
+        "port scan": r"nmap scan|port scan detected|reconnaissance",
+        "ddos attack": r"ddos|flooding|traffic spike",
+        "lateral movement": r"unauthorized lateral|moving inside network",
+        "privilege escalation": r"escalated privileges|sudo abuse",
+        "data exfiltration": r"exfiltration|large outbound traffic",
+        "ransomware": r"ransomware|file encryption detected"
+    }
 
-if st.button("Analyze"):
-    if log_input.strip():
-        X = vectorizer.transform([log_input])
-        intent = clf.predict(X)[0]
+    for intent, pattern in patterns.items():
+        if re.search(pattern, log_lower):
+            return intent
 
-        st.subheader("🔍 Detected Intent")
+    return "unknown"
+
+# ------------------------- UI -------------------------
+def main():
+    st.title("🔐 SIEM Offline AI Agent")
+    st.write("Analyze security logs and generate automated SOC responses.")
+
+    playbooks = load_playbooks()
+
+    log_input = st.text_area("Enter security log message:", height=140)
+
+    if st.button("Analyze Log"):
+        if not log_input.strip():
+            st.warning("Please enter a log message.")
+            return
+
+        intent = detect_intent(log_input)
+        st.subheader("📌 Detected Intent:")
         st.success(intent)
 
-        st.subheader("📘 Recommended Playbook")
-
         if intent in playbooks:
-            steps = playbooks[intent]
-            for step in steps:
-                st.write(f"- {step}")
+            st.subheader("📘 Recommended Playbook:")
+            steps = playbooks[intent]["steps"]
+            for i, step in enumerate(steps, 1):
+                st.write(f"**{i}. {step}**")
         else:
-            st.warning("No playbook found for this intent.")
-    else:
-        st.error("Please enter a log message first.")
-=======
-from siem_agent import detect_intent, load_playbooks
+            st.error("No playbook available for this intent.")
 
+    st.divider()
+    st.subheader("📂 Sample Logs Preview")
+    st.code("""
+[WARNING] Failed login attempt from 192.168.1.10  
+[ALERT] Possible SQL Injection on /login  
+[CRITICAL] Malware detected on endpoint-22  
+""")
 
-# -------------------------------------------------------
-# PAGE CONFIGURATION
-# -------------------------------------------------------
-st.set_page_config(
-    page_title="SIEM AI Agent",
-    page_icon="🛡️",
-    layout="wide"
-)
-
-# Custom styling
-st.markdown("""
-    <style>
-        .title {font-size: 40px; font-weight: bold; color: #1f77b4;}
-        .sub {font-size: 22px; color: #4f4f4f;}
-        .intent-box {padding: 10px; border-radius: 8px; background: #e8f5e9; font-size: 20px;}
-        .playbook-box {padding: 12px; border: 1px solid #cfcfcf; border-radius: 8px; background: #fafafa;}
-    </style>
-""", unsafe_allow_html=True)
-
-
-# -------------------------------------------------------
-# LOAD PLAYBOOKS
-# -------------------------------------------------------
-playbooks = load_playbooks()
-
-
-# -------------------------------------------------------
-# TITLE
-# -------------------------------------------------------
-st.markdown("<div class='title'>🛡️ SIEM AI Agent (Offline)</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub'>Analyze logs → Detect Intent → Recommend SOC Playbook</div>", unsafe_allow_html=True)
-st.write("---")
-
-
-# -------------------------------------------------------
-# SIDEBAR MENU
-# -------------------------------------------------------
-st.sidebar.header("Options")
-menu = st.sidebar.radio("Choose Mode:", ["Enter Log Manually", "Upload Log File", "Use Sample Logs"])
-
-
-# -------------------------------------------------------
-# MANUAL LOG INPUT
-# -------------------------------------------------------
-user_log = ""
-
-if menu == "Enter Log Manually":
-    user_log = st.text_area("📝 Enter a log message:", height=150)
-
-elif menu == "Upload Log File":
-    uploaded = st.file_uploader("📁 Upload a .txt log file")
-    if uploaded:
-        user_log = uploaded.read().decode("utf-8")
-        st.code(user_log)
-
-elif menu == "Use Sample Logs":
-    try:
-        with open("sample_logs.txt", "r") as f:
-            samples = f.read().splitlines()
-        sample_choice = st.selectbox("📌 Select a sample log:", samples)
-        user_log = sample_choice
-        st.code(sample_choice)
-    except:
-        st.error("sample_logs.txt not found.")
-
-
-st.write("---")
-
-
-# -------------------------------------------------------
-# PROCESSING
-# -------------------------------------------------------
-if st.button("🔍 Analyze Log"):
-    if not user_log.strip():
-        st.warning("Please enter or upload a log.")
-    else:
-        # Detect intent using your offline agent
-        intent = detect_intent(user_log)
-
-        st.markdown("### 🔎 Detected Intent")
-        st.markdown(
-            f"<div class='intent-box'>Intent: <b>{intent}</b></div>",
-            unsafe_allow_html=True
-        )
-
-        # Playbook mapping
-        st.markdown("### 📘 Recommended Playbook")
-        if intent in playbooks:
-            pb = playbooks[intent]
-            st.markdown("<div class='playbook-box'>", unsafe_allow_html=True)
-            st.write(pb.get("steps", "No steps available"))
-            st.markdown("</div>", unsafe_allow_html=True)
-        else:
-            st.error("❌ No playbook found for this intent.")
-
-        # Extra Info
-        st.markdown("### 🧠 How the Agent Detected This Intent")
-        st.info("""
-        ⚙ This SIEM Agent uses:
-        - Keyword-based offline classification  
-        - Pattern matching  
-        - Log context analysis  
-        - Mapping rules from playbooks.yml  
-        """)
-
-st.write("---")
-st.success("✅ SIEM Agent Ready. This app runs 100% offline — no API key required.")
->>>>>>> 979eef7 (Fixed paths for Streamlit deployment)
+if __name__ == "__main__":
+    main()
