@@ -4,6 +4,7 @@
 This repository contains my complete submission for the **Goklyn AI/ML Internship Assignment**, covering all three required tasks:  
 **Machine Learning Pipeline**, **SIEM AI Agent**, and **AI-based SIEM Enhancement Proposal**.
 
+
 ---
 
 ## 📂 Repository Structure
@@ -55,6 +56,9 @@ python Task-1/ml_pipeline.py
 ---
 
 # 🤖 Task 2 — Offline SIEM AI Agent
+
+### 🌐 Live Demo (Task-2)
+👉 **[Click here to open the Streamlit SIEM AI Agent]  (https://goklynaimlassignment-arapp2hg7icfq2jkxtdanq2.streamlit.app/)**
 
 ### ✨ Features
 - Works 100% offline (no API key required)
