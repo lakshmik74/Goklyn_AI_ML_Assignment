@@ -1,32 +1,37 @@
 failed login:
-  - Check for repeated login attempts
-  - Lock affected account
-  - Verify if IP is suspicious
-  - Check for brute-force patterns
-  - Escalate to L2 SOC if needed
+  steps:
+    - Check for repeated login attempts
+    - Lock affected account
+    - Verify if IP is suspicious
+    - Check for brute-force patterns
+    - Escalate to L2 SOC if needed
 
 malware detected:
-  - Isolate infected system from network
-  - Run antivirus scan
-  - Collect malware sample for forensics
-  - Patch vulnerable software
-  - Monitor for lateral movement
+  steps:
+    - Isolate infected system from network
+    - Run antivirus scan
+    - Collect malware sample for forensics
+    - Patch vulnerable software
+    - Monitor for lateral movement
 
 suspicious ip:
-  - Check IP reputation
-  - Block IP temporarily
-  - Inspect network traffic
-  - Enable deep packet inspection
-  - Report to threat intel team
+  steps:
+    - Check IP reputation
+    - Block IP temporarily
+    - Inspect network traffic
+    - Enable deep packet inspection
+    - Report to threat intel team
 
 unauthorized access:
-  - Reset user credentials
-  - Review access logs
-  - Disable unauthorized sessions
-  - Perform privilege audit
+  steps:
+    - Reset user credentials
+    - Review access logs
+    - Disable unauthorized sessions
+    - Perform privilege audit
 
 bruteforce attack:
-  - Block IP immediately
-  - Enable rate limiting
-  - Increase authentication logging
-  - Require MFA for affected accounts
+  steps:
+    - Block IP immediately
+    - Enable rate limiting
+    - Increase authentication logging
+    - Require MFA for affected accounts
